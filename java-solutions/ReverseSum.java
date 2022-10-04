@@ -4,6 +4,7 @@ public class ReverseSum{
 
     static int[] add(int[] arr, int n){
         if (arr[arr.length - 1] == arr.length - 1) {
+            // Arrays.copyOf
             int[] brr = new int[(arr.length) * 2 - 1];
             for (int i = 0; i < arr.length - 1; i++) {
                 brr[i] = arr[i];
@@ -11,8 +12,7 @@ public class ReverseSum{
             brr[brr.length - 1] = arr[arr.length - 1] + 1;
             brr[brr[brr.length - 1] - 1] = n;
             return brr;
-        }
-        else{
+        } else {
             arr[arr[arr.length - 1]] = n;
             arr[arr.length - 1] += 1;
             return arr;

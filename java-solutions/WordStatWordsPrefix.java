@@ -5,8 +5,8 @@ import java.util.*;
 public class WordStatWordsPrefix {
 
     static boolean checkChar(char c){
-        return (Character.isLetter(c) || Character.getType(c) == Character.DASH_PUNCTUATION ||
-            c == '\'');
+        return (Character.isLetter(c) || 
+            Character.getType(c) == Character.DASH_PUNCTUATION || c == '\'');
     }
 
     public static void main(String[] args){
@@ -49,7 +49,7 @@ public class WordStatWordsPrefix {
         } catch (FileNotFoundException e){
             System.out.println("Input file not found:" + e.getMessage());
         } catch (UnsupportedEncodingException e){
-            System.out.println("Ого ошибка кодировки(нет)");
+            System.out.println("utf-8 not supported...");
         }
         try{
             BufferedWriter writer = new BufferedWriter(
@@ -80,7 +80,7 @@ public class WordStatWordsPrefix {
         } catch (FileNotFoundException e){
             System.out.println("Output file not found:" + e.getMessage());
         } catch (UnsupportedEncodingException e){
-            System.out.println("Ого ошибка кодировки(нет)");
+            System.out.println("utf-8 not supported...");
         }
     }
 }

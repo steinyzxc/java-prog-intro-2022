@@ -5,8 +5,9 @@ import java.util.*;
 public class WordStatWordsPrefix {
 
     static boolean checkChar(char c){
-        return (Character.isLetter(c) || 
-            Character.getType(c) == Character.DASH_PUNCTUATION || c == '\'');
+        return Character.isLetter(c) || 
+            Character.getType(c) == Character.DASH_PUNCTUATION || 
+            c == '\'';
     }
 
     public static void main(String[] args){
@@ -15,9 +16,10 @@ public class WordStatWordsPrefix {
             BufferedReader reader = new BufferedReader(
                 new InputStreamReader(new FileInputStream(args[0]), "utf-8"));
             try {
+                StringBuilder word = new StringBuilder();
+
                 char[] inp = new char[512];
                 int read = reader.read(inp);
-                StringBuilder word = new StringBuilder();
                 while (read >= 0){
                     //System.err.println(inp);
                     //System.err.println("-------------");
@@ -28,22 +30,23 @@ public class WordStatWordsPrefix {
                             if (!word.isEmpty()){
                                 prefixes.add(word.substring(0, Math.min(3, word.length())));
                             }
-                            word = new StringBuilder();
+                            word.setLength(0);
                         }
                     }
                     read = reader.read(inp);
                 }
+
                 if (!word.isEmpty()){
                     prefixes.add(word.substring(0, Math.min(3, word.length())));
                 }
                 Collections.sort(prefixes);
             } catch  (IOException e){
-                System.out.println("Read exception:" + e.getMessage());
+                System.out.println("Read exception: " + e.getMessage());
             } finally {
                 try{
                     reader.close();
                 } catch (IOException e){
-                    System.out.println("Close reader exception:" + e.getMessage());
+                    System.out.println("Close reader exception: " + e.getMessage());
                 }
             }
         } catch (FileNotFoundException e){
@@ -51,16 +54,16 @@ public class WordStatWordsPrefix {
         } catch (UnsupportedEncodingException e){
             System.out.println("utf-8 not supported...");
         }
-        try{
+
+        try {
             BufferedWriter writer = new BufferedWriter(
                 new OutputStreamWriter(new FileOutputStream(args[1]), "utf-8"));
-            try{
+            try {
                 int cnt = 1;
                 for (int i = 0; i < prefixes.size() - 1; i++) {
                     if (prefixes.get(i).equals(prefixes.get(i + 1))) {
                         cnt++;
-                    }
-                    else{
+                    } else {
                         writer.write(prefixes.get(i) + " " + cnt);
                         writer.newLine();
                         cnt = 1;

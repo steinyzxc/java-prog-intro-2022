@@ -1,7 +1,7 @@
 import java.util.*;
 import java.io.*;
 
-public class Reverse {
+public class ReverseOctDec {
     public static void main(String[] args) {
         MyScanner lines = new MyScanner(System.in);
         try {

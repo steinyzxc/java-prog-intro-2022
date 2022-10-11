@@ -1,15 +1,21 @@
 import java.io.*;
 import java.util.*;
 
-public class WordStatInput {
+public class Wspp {
     public static void main(String[] args) {
-        Map<String, Integer> words = new LinkedHashMap<>();
+        Map<String, IntList> words = new LinkedHashMap<>();
         try {
             MyScanner reader = new MyScanner(new File(args[0]));
             try {
+                int wordCount = 1;
                 while (reader.hasNextWord()){
                     String word = reader.nextWord().toLowerCase();
-                    words.put(word, words.getOrDefault(word, 0) + 1);
+                    if (words.get(word) != null){
+                        words.get(word).add(wordCount);
+                    } else {
+                        words.put(word, new IntList(new int[]{wordCount}));
+                    }
+                    wordCount++;
                 }
             } catch (FileNotFoundException e){
                 System.out.println("File not found: " + e.getMessage());
@@ -26,8 +32,11 @@ public class WordStatInput {
         try {
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(args[1]), "utf-8"));
             try {
-                for(Map.Entry<String, Integer> entry : words.entrySet()){
-                    writer.write(entry.getKey() + " " + entry.getValue());
+                for(Map.Entry<String, IntList> entry : words.entrySet()){
+                    writer.write(entry.getKey() + " " + entry.getValue().getSize());
+                    for (int i = 0; i < entry.getValue().getSize(); i++) {
+                        writer.write(" " + entry.getValue().getInt(i));
+                    }
                     writer.newLine();
                 }
             } finally {

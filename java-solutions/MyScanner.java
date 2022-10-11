@@ -7,18 +7,19 @@ public class MyScanner {
     private char[] buffer = new char[512];
     private int index = 0;
     private int read = 0;
-//---------------------constructors w/o buffersize----------------------------
-    public MyScanner (File file, String encoding) throws FileNotFoundException, UnsupportedEncodingException {
+
+    //---------------------constructors w/o buffersize----------------------------
+    public MyScanner(File file, String encoding) throws FileNotFoundException, UnsupportedEncodingException { // :NOTE: Charset
         reader = new BufferedReader(new InputStreamReader(
             new FileInputStream(file), encoding)
         );
     }
 
-    public MyScanner (File file) throws FileNotFoundException, UnsupportedEncodingException {
+    public MyScanner(File file) throws FileNotFoundException, UnsupportedEncodingException {
         this(file, "utf-8");
     }
 
-    public MyScanner (String s) {
+    public MyScanner(String s) {
         reader = new BufferedReader(new StringReader(s));
         //System.out.println(s + " constructor");
     }
@@ -26,18 +27,19 @@ public class MyScanner {
     public MyScanner(InputStream in) {
         reader = new BufferedReader(new InputStreamReader(in));
     }
-//---------------constructors with buffer size-------------------------------------
-    public MyScanner (File file, String encoding, int size) throws FileNotFoundException, UnsupportedEncodingException {
+
+    //---------------constructors with buffer size-------------------------------------
+    public MyScanner(File file, String encoding, int size) throws FileNotFoundException, UnsupportedEncodingException {
         this(file, encoding);
         buffer = new char[size];
     }
 
-    public MyScanner (File file, int size) throws FileNotFoundException, UnsupportedEncodingException {
+    public MyScanner(File file, int size) throws FileNotFoundException, UnsupportedEncodingException {
         this(file, "utf-8");
         buffer = new char[size];
     }
 
-    public MyScanner (String s, int size) {
+    public MyScanner(String s, int size) {
         this(s);
         buffer = new char[size];
     }
@@ -48,54 +50,56 @@ public class MyScanner {
     }
 //-----------------------------end of constructors!!------------------------------------------------
 
-    public int read() throws IOException{
-        if (index < read){
+    public int read() throws IOException {
+        if (index < read) {
             return read;
         } else {
             read = reader.read(buffer);
             index = 0;
-            //System.out.println(buffer + "-----------");
             return read;
         }
     }
 
-//----------------------CHECKERS--------------------------------
+    //----------------------CHECKERS--------------------------------
     private static boolean checkCharForWord(Character c) {
-        return Character.isLetter(c) || 
-            Character.getType(c) == Character.DASH_PUNCTUATION || 
+        return Character.isLetter(c) ||
+            Character.getType(c) == Character.DASH_PUNCTUATION ||
             c == '\'';
     }
-    Predicate<Character> checkCharForWord = MyScanner::checkCharForWord;
+
+    private final Predicate<Character> checkCharForWord = MyScanner::checkCharForWord;
 
     private static boolean checkNotWhitespace(Character c) {
         return !Character.isWhitespace(c);
     }
-    Predicate<Character> checkNotWhitespace = MyScanner::checkNotWhitespace;
+
+    private final Predicate<Character> checkNotWhitespace = MyScanner::checkNotWhitespace;
 
     private static boolean checkIsLineSeparator(Character c) {
         return !(c.equals('\n') || c.equals('\r'));
     }
-    Predicate<Character> checkIsLineSeparator = MyScanner::checkIsLineSeparator;
 
-//------------------------END OF CHECKERS--------------------
-    private String next(Predicate<Character> checker) throws IOException{
+    private final Predicate<Character> checkIsLineSeparator = MyScanner::checkIsLineSeparator;
+
+    //------------------------END OF CHECKERS--------------------
+    private String next(Predicate<Character> checker) throws IOException {
         StringBuilder word = new StringBuilder();
         this.read();
-        while (read > 0) {
+        while (read > 0) { // :NOTE: very bad
             for (; index < read; index++) {
                 if (checker.test(buffer[index])) {
                     word.append(buffer[index]);
                 } else {
                     if (checker == checkIsLineSeparator) {
-                        if (index + 1 < read){
-                            if (buffer[index] == '\r' && buffer[index + 1] == '\n'){
+                        if (index + 1 < read) {
+                            if (buffer[index] == '\r' && buffer[index + 1] == '\n') {
                                 index++;
                             }
                         } else {
-                            if (buffer[index] == '\r'){
+                            if (buffer[index] == '\r') {
                                 index = read;
-                                if (this.read() > 0){
-                                    if (buffer[0] != '\n'){
+                                if (this.read() > 0) {
+                                    if (buffer[0] != '\n') {
                                         index--;
                                     }
                                 }
@@ -112,30 +116,26 @@ public class MyScanner {
             }
             this.read();
         }
-        //System.out.println(word);
         if (!word.isEmpty()) {
             return word.toString();
-        }
-        else {
+        } else {
             throw new NoSuchElementException();
         }
     }
 
-    public String nextWord() throws IOException{
+    public String nextWord() throws IOException {
         try {
             return next(checkCharForWord);
-        } catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             throw new NoSuchElementException("No more words here");
         }
     }
 
-    public int nextInt() throws IOException{
+    public int nextInt() throws IOException {
         try {
             String number = next(checkNotWhitespace);
-            //System.out.println(number);
-            //System.err.println(number);
             Character c = Character.toLowerCase(number.charAt(number.length() - 1));
-            if (c.equals('o')){
+            if (c.equals('o')) {
                 if (number.charAt(0) == '-') {
                     return -(Integer.parseUnsignedInt(number.substring(1, number.length() - 1), 8));
                 } else {
@@ -144,24 +144,24 @@ public class MyScanner {
             } else {
                 return Integer.parseInt(number);
             }
-        } catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             throw new NoSuchElementException("No more ints here");
         }
     }
 
-    public String nextLine() throws IOException{
+    public String nextLine() throws IOException {
         try {
             return next(checkIsLineSeparator);
-        } catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             throw new NoSuchElementException("No more lines here");
         }
     }
 
-    public boolean hasNextWord() throws IOException{
+    public boolean hasNextWord() throws IOException {
         this.read();
-        while (read > 0){
+        while (read > 0) {
             for (int i = index; i < read; i++) {
-                if (checkCharForWord(buffer[i])){
+                if (checkCharForWord(buffer[i])) {
                     return true;
                 }
             }
@@ -171,11 +171,11 @@ public class MyScanner {
         return false;
     }
 
-    public boolean hasNextInt() throws IOException{
+    public boolean hasNextInt() throws IOException {
         this.read();
-        while (read > 0){
+        while (read > 0) {
             for (int i = index; i < read; i++) {
-                if (Character.isDigit(buffer[i]) || buffer[i] == '-'){
+                if (Character.isDigit(buffer[i]) || buffer[i] == '-') {
                     return true;
                 }
             }
@@ -186,16 +186,13 @@ public class MyScanner {
     }
 
     public boolean hasNextLine() throws IOException {
-        if (this.read() > 0){
-            return true;
-        }
-        return false;
+        return this.read() > 0;
     }
 
     public void close() {
         try {
             reader.close();
-        } catch(IOException e){
+        } catch (IOException e) {
             System.out.println("Close exception: " + e.getMessage());
         }
     }
